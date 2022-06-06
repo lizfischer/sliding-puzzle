@@ -1,12 +1,13 @@
 // Begin game once DOM loaded
 document.addEventListener("DOMContentLoaded", game);
 
+
 function game() {
 
   // Data structure to hold positions of tiles
   let parentX = document.querySelector(".sliding-puzzle").clientHeight; //FIXME: Handle with CSS
   const baseDistance = 34.5;
-  let tileMap = {
+  let answer = {
     1: {
       tileNumber: 1,
       position: 1,
@@ -61,6 +62,7 @@ function game() {
       left: baseDistance * 2
     }
   }
+  let tileMap = JSON.parse(JSON.stringify(answer));
 
   // Array of tileNumbers in order of last moved
   let history = [];
@@ -78,21 +80,24 @@ function game() {
     if (position === 1) return [2, 4];
   }
 
-  // Board setup according to the tileMap
   document.querySelector('#shuffle').addEventListener('click', shuffle , true);
   document.querySelector('#solve').addEventListener('click', solve , true);
   const tiles = document.querySelectorAll('.tile');
-  let delay = -50;
-  for(let i = 0; i < tiles.length; i++) {
-    tiles[i].addEventListener('click', tileClicked ,true );
 
-    const tileId = tiles[i].dataset.id;
-    delay += 50;
-    setup(tiles[i])
-    //setTimeout(setup, delay, tiles[i]);
+  function setup(){
+    // Board setup according to the tileMap
+    let delay = -50;
+    for(let i = 0; i < tiles.length; i++) {
+      tiles[i].addEventListener('click', tileClicked ,true );
+
+      const tileId = tiles[i].dataset.id;
+      delay += 50;
+      setup_tile(tiles[i])
+    }
   }
+  setup();
 
-  function setup(tile) {
+  function setup_tile(tile) {
     const tileId = tile.dataset.id;
     // tile.style.left = tileMap[tileId].left + '%';
     // tile.style.top = tileMap[tileId].top + '%';
@@ -174,7 +179,7 @@ function game() {
 
     for (const key in tileMap) {
       if ((tileMap[key].tileNumber !== 1) && (key !== "empty")) {
-        if (tileMap[key].position < tileMap[key-1]["position"]) {
+        if (tileMap[key].position < tileMap[key-1].position) {
           return false;
         }
       }
@@ -240,11 +245,12 @@ function game() {
   }
 
   // Temporary function for solving puzzle.
-  // To be reimplemented with a more sophisticated algorithm
-  // TODO: IDA* https://gsurma.medium.com/sliding-puzzle-solving-search-problem-with-iterative-deepening-a-d7e8c14eba04
   let solveTimeouts = []
-  function solve() {
-    clearTimers(shuffleTimeouts);
+  function solve() {  // FIXME: Change this to just show a solution
+    tileMap = answer;
+    setup();
+
+    /*clearTimers(shuffleTimeouts);
 
 
     let repeater = history.length;
@@ -256,7 +262,7 @@ function game() {
       let locatedTileNumber = tileMap[lastMoved].tileNumber;
       let domTile = tiles[locatedTileNumber-1];
       solveTimeouts.push(setTimeout(moveTile, i*200, domTile, false));
-    }
+    }*/
   }
 
 
