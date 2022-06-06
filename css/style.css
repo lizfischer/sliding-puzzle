@@ -6,12 +6,58 @@ body {
   -webkit-tap-highlight-color: transparent;
   khtml-tap-highlight-color: transparent; }
 
+.modal {
+  display: none; /*  Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 1; /* Sit on top */
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgb(0,0,0); /* Fallback color */
+  background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
 
+/* Modal Content/Box */
+.modal-content {
+  background-color: #fefefe;
+  margin: 15% auto; /* 15% from the top and centered */
+  padding: 20px;
+  border: 1px solid #888;
+  width: 40%; /* Could be more or less, depending on screen size */
+}
+
+/* The Close Button */
+.close {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+#hints {
+  width: 1.2em;
+  height: 1.2em;
+
+}
+
+#slider-game{
+  margin: auto;
+  display: flex;
+}
 
 .sliding-puzzle-figure {
   margin: auto;
-  height: 650px;
-  width: 650px;
+  height: 100%;
+  width: 100%;
   max-height: 70vh;
   max-width: 70vh;
   padding-bottom: 50vh;
@@ -53,8 +99,8 @@ body {
       transition: all 0.5s linear;
       transition-timing-function: ease;
       box-sizing: border-box; }
-      .sliding-puzzle-figure .sliding-puzzle .tile.error {
-        background-color: #e87f77; }
+      .sliding-puzzle-figure .sliding-puzzle .tile.correct {
+        background-color: #bfdb9b; }
       .sliding-puzzle-figure .sliding-puzzle .tile span {
         pointer-events: none;
         flex: 50%;
