@@ -178,9 +178,6 @@ function game(shuffled) {
   }
   let tileMap = shuffled
 
-  // Array of tileNumbers in order of last moved
-  let history = [];
-
   // Movement map
   function movementMap(position) {
     if (position === 9) return [6, 8];
@@ -230,7 +227,7 @@ function game(shuffled) {
 
   // Moves tile to empty spot
   // Returns error message if tile cannot be moved
-  function moveTile(tile, recordHistory = true) {
+  function moveTile(tile) {
     // Check if Tile can be moved
     // (must be touching empty tile)
     // (must be directly perpendicular to empty tile)
@@ -239,16 +236,6 @@ function game(shuffled) {
       console.log("Tile " + tileID + " can't be moved.");
       return;
     }
-
-    // Push to history
-    if (recordHistory === true) {
-
-      if (history.length >= 3) {
-        if (history[history.length-1] !== history[history.length-3]) history.push(tileID);
-      } else {
-        history.push(tileID);
-      }
-    } 
 
     // Swap tile with empty tile
     const emptyPosition = tileMap.empty.position;
@@ -286,8 +273,6 @@ function game(shuffled) {
       }
     }
 
-    // Clear history if solved
-    history = [];
     return true;
   }
 
