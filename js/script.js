@@ -1,16 +1,14 @@
 // Begin game once DOM loaded
 document.addEventListener("DOMContentLoaded", load);
 
-function getSyncScriptParams() {
-  var scripts = document.getElementsByTagName('script');
-  var lastScript = scripts[scripts.length-1];
-  var scriptName = lastScript;
-  return {
-    string: scriptName.getAttribute('data-string'),
-    shuffle: scriptName.getAttribute('data-shuffle')
-  };
+function get_board_state(tileMap){
+  str = ``
+  for (i=1; i < 9; i++){
+    str += tileMap[i].position
+  }
+  str += tileMap["empty"].position
+  return str
 }
-
 
 function getTop(position, baseDistance = 34.5){
   if (position <= 3) return 0;
@@ -62,31 +60,50 @@ function make_dom(tiles){
   const list = document.createElement('ul');
   list.classList.add('sliding-puzzle');
   list.setAttribute('id', 'tile-wrapper');
-  fig.appendChild(list)
 
-  const caption = document.createElement('figcaption');
-  caption.textContent = "Word Slider | ";
+  const controls = document.createElement('div');
+  controls.setAttribute('id', 'game-controls')
+
+  const help_button = document.createElement('a');
+  help_button.setAttribute('id', 'help-toggle');
+  help_button.textContent = "How to play ";
 
   const shuffle_button = document.createElement('a');
   shuffle_button.setAttribute('id', 'shuffle');
   shuffle_button.textContent = "Shuffle ";
-  caption.appendChild(shuffle_button);
+  controls.appendChild(shuffle_button);
 
   const solve_button = document.createElement('a');
   solve_button.setAttribute('id', 'solve');
   solve_button.textContent = "Solve ";
-  caption.appendChild(solve_button);
 
   const hints_button = document.createElement('input')
   hints_button.setAttribute('type', 'checkbox');
   hints_button.setAttribute('id', 'hints');
   const hints_label = document.createElement('label')
-  hints_label.setAttribute('for', 'label')
-  hints_label.textContent= " | Hints?";
-  caption.appendChild(hints_label);
-  caption.appendChild(hints_button);
+  hints_label.setAttribute('id', 'hints-label')
+  hints_label.textContent= "Confirm tile positions?";
 
-  fig.appendChild(caption);
+  const clues_button = document.createElement('input')
+  clues_button.setAttribute('type', 'checkbox');
+  clues_button.setAttribute('id', 'clues-toggle');
+  const clues_label = document.createElement('label')
+  clues_label.setAttribute('id', 'clues-label')
+  clues_label.textContent= "Show clues?";
+
+
+  const line1= document.createElement('span');
+  const line2= document.createElement('span');
+  line1.appendChild(help_button);
+  line1.appendChild(solve_button);
+  hints_label.appendChild(hints_button);
+  line2.appendChild(hints_label);
+  clues_label.appendChild(clues_button);
+  line2.appendChild(clues_label);
+
+  controls.appendChild(line1)
+  controls.appendChild(line2)
+  fig.appendChild(list);
 
 
   const tile_wrapper = document.getElementById("tile-wrapper")
@@ -103,37 +120,262 @@ function make_dom(tiles){
     list.append(tile_elem);
   }
 
-  const game_wrapper = document.getElementById("slider-game");
-  game_wrapper.appendChild(fig);
-
+  /** WIN MODAL **/
   let modal = document.createElement('div');
   modal.setAttribute('id', 'winner');
   modal.classList.add('modal');
   let modal_content = document.createElement('div');
-  modal_content.classList.add('modal-content');
-  modal_content.textContent = 'Congratulations!'
+  modal_content.classList.add('modal-win');
+  modal_content.textContent = 'Winner!'
   modal.appendChild(modal_content)
   let close = document.createElement('span');
   close.textContent = 'x';
+  close.setAttribute('id', 'close-win');
   close.classList.add('close');
   modal_content.appendChild(close)
-  game_wrapper.appendChild(modal)
 
+  let trophy = document.createElement('img')
+  trophy.setAttribute('src', 'https://www.lizmfischer.com/static/files/success_cup.jpg')
+  modal_content.appendChild(trophy)
+
+
+  /** HELP MODAL **/
+  let help_modal = document.createElement('div');
+  help_modal.setAttribute('id', 'help');
+  help_modal.classList.add('modal');
+  let help_modal_content = document.createElement('div');
+  help_modal_content.classList.add('modal-help');
+
+  help_modal.appendChild(help_modal_content)
+
+  const game_wrapper = document.getElementById("slider-game");
+  const clues = document.getElementById("clues");
+  game_wrapper.insertBefore(controls, clues);
+  game_wrapper.insertBefore(fig, clues);
+  game_wrapper.insertBefore(modal, clues);
+  game_wrapper.insertBefore(help_modal, clues);
+  help_modal_content.innerHTML = '<span id="close-help" class="close">x</span><h2>How to play</h2>' +
+      '<p>Slide tiles to form a grid consisting entirely of valid words.</p>' +
+      '<p>You can adjust the difficulty by turning on "Confirm tile positions," which highlights correct tiles in green, or "Show clues," which provides a crossword-style hint to each entry.</p>'
+
+}
+function load_styles(){
+  let styles = `#slider-game #shuffle {
+    display: none;
+}
+
+#slider-game #clues {
+    display: none;
+    justify-content: center;
+    font-weight: normal;
+} #slider-game #clues ol {
+      width:50%
+  }
+  
+#slider-game #help-toggle, #slider-game #solve{
+  cursor: pointer;
+    padding-right: 10px;
+}
+#slider-game #hints-label, #slider-game #clues-label{
+    padding-right: 10px;
 }
 
 
+#slider-game {
+    font-family: 'Roboto Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 24px;
+    margin:auto;
+    max-width:100vw;
+    /*max-width: 80vw !important;
+     max-height: 80vw !important;*/
+    -webkit-tap-highlight-color: transparent;
+    khtml-tap-highlight-color: transparent;
+}
+
+#slider-game .modal {
+    display: none; /*  Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+
+/* Modal Content/Box */
+#slider-game .modal-win {
+    background-color: #81B5CC;
+    margin: 10% auto; /* 15% from the top and centered */
+    padding: 3%;
+    border: 1px solid #888;
+    width: 40vw;
+    max-width: 400px;
+    min-height: 20vh;
+    text-align: center;
+    color: white;
+    font-size: 3vw;
+}
+
+#slider-game .modal-win img {
+    width: 70%;
+    display: block;
+    margin: auto;
+}
+
+#slider-game .modal-help {
+    background-color: #ffffff;
+    margin: 5% auto; /* 15% from the top and centered */
+    padding: 3%;
+    border: 1px solid #888;
+    width: 40vw;
+    max-width: 400px;
+    min-height: 20vh;
+    text-align: center;
+    color: black;
+    font-size: 1em;
+}
+#slider-game .modal-help p{
+    font-weight: normal;
+}
+#slider-game .modal-help #close-help {
+    color: black;
+}
+
+
+/* The Close Button */
+#slider-game .close {
+    color: white;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+#slider-game .close:hover,
+#slider-game .close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+#slider-game #game-controls {
+    text-align: center;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+#slider-game #game-controls #hints-label{
+    display: inline-block;
+    color: #E74C3C;
+}#slider-game #game-controls #clues-label{
+     display: inline-block;
+     color: #66a722;
+ }
+#slider-game #game-controls label::before{
+    /* content:" | ";*/
+    color:black;
+}
+#slider-game input{
+    width: 1.2em;
+    height: 1.2em;
+}
+
+#slider-game #slider-game{
+    margin: auto;
+    display: flex;
+}
+
+#slider-game .sliding-puzzle-figure {
+    margin: auto;
+    height: 100%;
+    width: 100%;
+    max-height: 70vh;
+    max-width: 70vh;
+}
+#slider-game .sliding-puzzle-figure a {
+    cursor: pointer; }
+#slider-game   .sliding-puzzle-figure a#shuffle {
+    color: #E74C3C; }
+#slider-game  #solve {
+    color: #3498DB;
+    text-align: center;
+}
+#slider-game .sliding-puzzle-figure .sliding-puzzle {
+    list-style-type: none;
+    position: relative;
+    margin-left: auto;
+    margin-right: auto;
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+    background-clip: border-box;
+    /* Firefox 4, Safari 5, Opera 10, IE 9 */
+    border: 18px solid #2f2f2f;
+    border-radius: 10px;
+    background-color: #2f2f2f; }
+#slider-game   .sliding-puzzle-figure .sliding-puzzle .tile {
+    position: absolute;
+    background-color: #ffffff;
+    color: #1F1F1F;
+    border-radius: 10px;
+    cursor: pointer;
+    width: 31%;
+    height: 31%;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    font-size: 5vh;
+    left: 0%;
+    top: 0%;
+    transition: all 0.5s linear;
+    transition-timing-function: ease;
+    box-sizing: border-box; }
+#slider-game    .sliding-puzzle-figure .sliding-puzzle .tile.correct {
+    background-color: #bfdb9b; }
+#slider-game    .sliding-puzzle-figure .sliding-puzzle .tile span {
+    pointer-events: none;
+    flex: 50%;
+    height: 50%;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #2f2f2f;
+}
+
+@media only screen and (max-width: 650px) {
+    #slider-game  .sliding-puzzle-figure {
+        width: 90vw;
+        height: 90vw;
+        max-height: 100vh; }
+    #slider-game   .sliding-puzzle-figure .sliding-puzzle {
+        border-width: 10px;
+        border-radius: 14px; }
+    #slider-game  .sliding-puzzle-figure .tile {
+        font-size: 1em; } }
+`
+  var styleSheet = document.createElement('style')
+  styleSheet.innerText = styles
+  document.head.appendChild(styleSheet)
+}
+
 function load(){
+  let string = document.getElementById('slider-game').getAttribute('data-string');
+  let tiles = parse_words(string)
 
-  let tiles = parse_words(getSyncScriptParams()["string"])
+  load_styles();
+  make_dom(tiles);
 
-  make_dom(tiles)
-
-  let shuffled = parse_shuffle(getSyncScriptParams()["shuffle"])
+  let shuffle_string = document.getElementById('slider-game').getAttribute('data-shuffle');
+  let shuffled = parse_shuffle(shuffle_string)
 
 
   game(shuffled);
 }
-
 
 function game(shuffled) {
 
@@ -248,6 +490,8 @@ function game(shuffled) {
     tileMap[tileID].position = emptyPosition;
 
     recolorTile(tile, tileID);
+    console.log(get_board_state(tileMap));
+
   }
 
 
@@ -292,7 +536,6 @@ function game(shuffled) {
       shuffleTimeouts.push(setTimeout(shuffleLoop, shuffleDelay));
       shuffleCounter++;
     }
-    console.log(tileMap);
   }
 
   let lastShuffled;
@@ -326,7 +569,7 @@ function game(shuffled) {
   /** WIN **/
   function win(){
     console.log("You win!");
-    setTimeout(() => {  modal.style.display = "block"; }, 500);
+    setTimeout(() => {  win_modal.style.display = "block"; 200});
   }
 
   /** SOLVE **/
@@ -352,6 +595,18 @@ function game(shuffled) {
     }
   }
 
+  /** CLUES **/
+  const clues_toggle = document.getElementById('clues-toggle');
+  clues_toggle.addEventListener('change', (event)=>{
+    const clues = document.getElementById('clues');
+    if (clues_toggle.checked) {
+      clues.style.display = "flex"
+    } else {
+      clues.style.display = "none"
+    }
+  })
+
+
   /** Readjust tiles on window resize! **/
   window.addEventListener('resize', function(event) {
     parentX = document.querySelector(".sliding-puzzle").clientHeight; //FIXME: Handle with CSS
@@ -360,18 +615,32 @@ function game(shuffled) {
 
 
   /** Winner modal **/
-  var modal = document.getElementById("winner");
-  var btn = document.getElementById("myBtn");
-  var span = document.getElementsByClassName("close")[0];
+  var win_modal = document.getElementById("winner");
+  var span = document.getElementById("close-win");
   span.onclick = function() {
-    modal.style.display = "none";
+    win_modal.style.display = "none";
   }
   window.onclick = function(event) {
-    if (event.target == modal) {
-      modal.style.display = "none";
+    if (event.target == win_modal) {
+      win_modal.style.display = "none";
     }
   }
 
+  /** Help modal **/
+  var help_modal = document.getElementById("help");
+  var btn = document.getElementById("help-toggle");
+  var span = document.getElementById("close-help");
+  btn.onclick = function() {
+    help_modal.style.display = "block";
+  }
+  span.onclick = function() {
+    help_modal.style.display = "none";
+  }
+  window.onclick = function(event) {
+    if (event.target == help_modal) {
+      help_modal.style.display = "none";
+    }
+  }
 }
 
 

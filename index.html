@@ -4,23 +4,35 @@
 
     <title>Sliding Puzzle</title>
     <link href="https://fonts.googleapis.com/css?family=Roboto+Condensed:400,700" rel="stylesheet">
-    <link rel="stylesheet" type="text/css" href="css/style.css">
-    
+ <link rel="stylesheet" type="text/css" href="css/style.css">
+    <script type="text/javascript" src="js/script.js"></script>
+
     <meta name="viewport" content="initial-scale=1.0, width=device-width">
 </head>
 <body>
-    <div id="slider-game" style="width:650px; height:650px"></div>
+    <div id="slider-game-wrap">
 
-<!--
-    <figure class="sliding-puzzle-figure">
-
-        <ul class="sliding-puzzle" id="tile-wrapper"></ul>
-
-        <figcaption>
-            Word Slider <a id="shuffle" >Shuffle</a> | <a id="solve">Solve</a> | <label for="hints">Hints?</label> <input id="hints" type="checkbox">
-        </figcaption>
-    </figure>-->
-
-<script type="text/javascript" src="js/script.js" data-string="PAYOFFACACIASCREAMSENATEEDENREDS" data-shuffle="169872534"></script>
+    </div>
+    <div id="slider-game" style="max-width:100vw; height:1000px"
+         data-string=" UICHEUNCOOLAREOLANEATENTAXIALEE" data-shuffle="169872534">
+        <div id="clues">
+            <ol class="across"> <b>Across</b>
+                <li>Breakfast option</li>
+                <li>Square</li>
+                <li>Ring on a trunk</li>
+                <li>Straighten up</li>
+                <li>Uber alternative</li>
+                <li>Windward's opposite</li>
+            </ol>
+            <ol class="down"> <b>Down</b>
+                <li>Photons, e.g.</li>
+                <li>Astonishing</li>
+                <li>Weapon for Lara Croft</li>
+                <li>___ catcher (schoolyard toy)</li>
+                <li>What gets bigger the more you take away, per an old riddle</li>
+                <li>Zest</li>
+            </ol>
+        </div>
+    </div>
 </body>
 </html>
