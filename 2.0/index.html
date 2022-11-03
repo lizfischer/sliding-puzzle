@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+<style>
+  #slider{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+    align-items: center;
+
+    background: #2f2f2f;
+    width: 100%;
+    height:100%;
+    border-radius: 10px;
+    padding: 10px 5px;
+  }
+
+  .tile {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    width: 30%;
+    height: 30%;
+    background-color: white;
+    border: 1px solid  #2f2f2f;
+    border-radius: inherit;
+    margin: -1px;
+  }
+
+  .tile.empty {
+    width: 30%;
+    height: 30%;
+    background-color: inherit;
+    border: none;
+  }
+
+  .letter {
+    width: 50%;
+    height: 50%;
+    text-align: center;
+    font-size: 2vw;
+
+    box-sizing: border-box;
+    border: 1px solid #2f2f2f;
+  }
+</style>
+
+<script>
+  document.addEventListener("DOMContentLoaded", load);
+
+  function load(){
+
+  }
+</script>
+
+<div id="slider-game" style="width:20vw; height:20vw">
+
+<div id="slider">
+  <span class="tile">
+    <span class="letter"><span>A</span></span>
+    <span class="letter">B</span>
+    <span class="letter">C</span>
+    <span class="letter">D</span>
+  </span>
+  <span class="tile">
+    <span class="letter">E</span>
+    <span class="letter">F</span>
+    <span class="letter">G</span>
+    <span class="letter">H</span>
+  </span>
+  <span class="tile">
+    <span class="letter">I</span>
+    <span class="letter">J</span>
+    <span class="letter">K</span>
+    <span class="letter">L</span>
+  </span>
+
+  <span class="tile">
+    <span class="letter">M</span>
+    <span class="letter">N</span>
+    <span class="letter">O</span>
+    <span class="letter">P</span>
+  </span>
+  <span class="tile">
+    <span class="letter">Q</span>
+    <span class="letter">R</span>
+    <span class="letter">S</span>
+    <span class="letter">T</span>
+  </span>
+  <span class="tile">
+    <span class="letter">U</span>
+    <span class="letter">V</span>
+    <span class="letter">W</span>
+    <span class="letter">X</span>
+  </span>
+
+  <span class="tile">
+    <span class="letter">Y</span>
+    <span class="letter">Z</span>
+    <span class="letter">1</span>
+    <span class="letter">2</span>
+  </span>
+  <span class="tile">
+    <span class="letter">3</span>
+    <span class="letter">4</span>
+    <span class="letter">5</span>
+    <span class="letter">6</span>
+  </span>
+  <span class="tile empty"></span>
+</div>
+
+</div>
+
+</body>
+</html>
